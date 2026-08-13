@@ -5,6 +5,7 @@ import { env } from "./config/env"
 import { errorHandler, notFound } from "./middlewares/error.middleware"
 import authRoutes from "./routes/auth.routes"
 import adminRoutes from "./routes/admin.routes"
+import bookingRoutes from "./routes/booking.routes"
 import tourPackageRoutes from "./routes/tourPackage.routes"
 import vendorRoutes from "./routes/vendor.routes"
 
@@ -33,6 +34,7 @@ export function createApp() {
 
   app.use("/api/auth", authRoutes)
   app.use("/api/admin", adminRoutes)
+  app.use("/api/bookings", bookingRoutes)
   app.use("/api/packages", tourPackageRoutes)
   app.use("/api/vendors", vendorRoutes)
 

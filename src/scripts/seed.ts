@@ -2,12 +2,26 @@ import bcrypt from "bcryptjs"
 import mongoose from "mongoose"
 
 import { env } from "../config/env"
+import { Booking } from "../models/Booking"
 import { TourPackage } from "../models/TourPackage"
 import { User } from "../models/User"
 import { Vendor } from "../models/Vendor"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@cabtourist.com"
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "Admin@123"
+
+const BOOKING_SEEDS = [
+  { ref: "CT-92841", customer: "Priya Sharma", phone: "9820000001", email: "priya@email.com", fromCity: "Mumbai", toCity: "Pune", tripType: "oneway", cab: "Sedan", date: "2026-07-26", time: "09:00", distanceKm: 150, amount: 2199, status: "ongoing", driver: "Ramesh K." },
+  { ref: "CT-92840", customer: "Rohit Mehta", phone: "9820000002", email: "rohit.m@email.com", fromCity: "Delhi", toCity: "Jaipur", tripType: "oneway", cab: "SUV", date: "2026-07-26", time: "08:30", distanceKm: 281, amount: 3899, status: "confirmed", driver: "Suresh P." },
+  { ref: "CT-92838", customer: "Ananya Rao", phone: "9820000003", email: "ananya.rao@email.com", fromCity: "Bengaluru", toCity: "Mysuru", tripType: "roundtrip", cab: "Sedan", date: "2026-07-25", time: "10:00", distanceKm: 145, amount: 2099, status: "completed", driver: "Manoj R." },
+  { ref: "CT-92835", customer: "Sara Fernandes", phone: "9820000004", email: "sara.f@email.com", fromCity: "Goa", toCity: "Panaji", tripType: "airport", cab: "Hatchback", date: "2026-07-25", time: "14:00", distanceKm: 40, amount: 899, status: "completed", driver: "Anthony D." },
+  { ref: "CT-92830", customer: "Vikram Singh", phone: "9820000005", email: "vikram.s@email.com", fromCity: "Chandigarh", toCity: "Manali", tripType: "oneway", cab: "SUV", date: "2026-07-24", time: "06:00", distanceKm: 310, amount: 5499, status: "cancelled", driver: "" },
+  { ref: "CT-92826", customer: "Neha Gupta", phone: "9820000006", email: "neha.g@email.com", fromCity: "Delhi", toCity: "Agra", tripType: "oneway", cab: "Premium", date: "2026-07-24", time: "07:30", distanceKm: 233, amount: 4299, status: "completed", driver: "Imran S." },
+  { ref: "CT-92822", customer: "Arjun Nair", phone: "9820000007", email: "arjun.n@email.com", fromCity: "Kochi", toCity: "Munnar", tripType: "oneway", cab: "SUV", date: "2026-07-23", time: "09:00", distanceKm: 130, amount: 2899, status: "completed", driver: "Biju V." },
+  { ref: "CT-92819", customer: "Meera Iyer", phone: "9820000008", email: "meera.i@email.com", fromCity: "Delhi", toCity: "Shimla", tripType: "roundtrip", cab: "Sedan", date: "2026-07-23", time: "08:00", distanceKm: 342, amount: 5199, status: "pending", driver: "" },
+  { ref: "CT-92815", customer: "Karan Malhotra", phone: "9820000009", email: "karan.m@email.com", fromCity: "Pune", toCity: "Mumbai", tripType: "oneway", cab: "Premium", date: "2026-07-22", time: "16:30", distanceKm: 150, amount: 2499, status: "completed", driver: "Deepak M." },
+  { ref: "CT-92810", customer: "Divya Menon", phone: "9820000010", email: "divya.m@email.com", fromCity: "Jaipur", toCity: "Udaipur", tripType: "oneway", cab: "SUV", date: "2026-07-22", time: "08:00", distanceKm: 420, amount: 6299, status: "completed", driver: "Gopal S." },
+]
 
 const VENDOR_SEEDS = [
   { name: "Skyline Travels", city: "Mumbai", fleet: 48, drivers: 62, rating: 4.8, revenue: 1240000, status: "active", joined: "2023-02-11" },
@@ -142,6 +156,14 @@ async function seed() {
       console.log(`Seeded ${VENDOR_SEEDS.length} vendors`)
     } else {
       console.log(`Vendors already seeded: ${vendorCount}`)
+    }
+
+    const bookingCount = await Booking.countDocuments()
+    if (bookingCount === 0) {
+      await Booking.insertMany(BOOKING_SEEDS)
+      console.log(`Seeded ${BOOKING_SEEDS.length} bookings`)
+    } else {
+      console.log(`Bookings already seeded: ${bookingCount}`)
     }
 
     const adminCount = await User.countDocuments({ role: "admin" })
