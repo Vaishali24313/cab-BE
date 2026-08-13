@@ -5,6 +5,7 @@ import { env } from "../config/env"
 import { Otp } from "../models/Otp"
 import { User, type IUser } from "../models/User"
 import { hashOtp, generateOtp, verifyOtpCode, otpExpiryDate } from "../services/otp.service"
+import { recordLogin } from "../services/session.service"
 import { signToken } from "../services/token.service"
 import { ApiError } from "../utils/ApiError"
 import { asyncHandler } from "../utils/asyncHandler"
@@ -22,7 +23,7 @@ function publicUser(user: IUser) {
 }
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body
+  const { name, email, password, clientMeta } = req.body
 
   const existing = await User.findOne({ email })
   if (existing) {
@@ -31,6 +32,8 @@ export const register = asyncHandler(async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10)
   const user = await User.create({ name, email, passwordHash })
+
+  await recordLogin(user, req, "email", clientMeta)
 
   const token = signToken(user)
   res.status(201).json({
@@ -41,7 +44,7 @@ export const register = asyncHandler(async (req, res) => {
 })
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+  const { email, password, clientMeta } = req.body
 
   const user = await User.findOne({ email }).select("+passwordHash")
   if (!user) {
@@ -57,6 +60,8 @@ export const login = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid email or password")
   }
 
+  await recordLogin(user, req, "email", clientMeta)
+
   const token = signToken(user)
   res.json({
     success: true,
@@ -66,7 +71,7 @@ export const login = asyncHandler(async (req, res) => {
 })
 
 export const google = asyncHandler(async (req, res) => {
-  const { email, googleId, name } = req.body
+  const { email, googleId, name, clientMeta } = req.body
 
   let user = await User.findOne({ $or: [{ googleId }, { email }] })
 
@@ -87,6 +92,8 @@ export const google = asyncHandler(async (req, res) => {
     }
     await user.save()
   }
+
+  await recordLogin(user, req, "google", clientMeta)
 
   const token = signToken(user)
   res.json({
@@ -132,7 +139,7 @@ export const sendOtp = asyncHandler(async (req, res) => {
 })
 
 export const verifyOtp = asyncHandler(async (req, res) => {
-  const { phone, otp, name } = req.body
+  const { phone, otp, name, clientMeta } = req.body
 
   const record = await Otp.findOne({ phone })
   if (!record) {
@@ -172,6 +179,8 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       await user.save()
     }
   }
+
+  await recordLogin(user, req, "phone", clientMeta)
 
   const token = signToken(user)
   res.json({

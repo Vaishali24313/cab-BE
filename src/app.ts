@@ -4,6 +4,7 @@ import express from "express"
 import { env } from "./config/env"
 import { errorHandler, notFound } from "./middlewares/error.middleware"
 import authRoutes from "./routes/auth.routes"
+import adminRoutes from "./routes/admin.routes"
 
 export function createApp() {
   const app = express()
@@ -29,6 +30,7 @@ export function createApp() {
   })
 
   app.use("/api/auth", authRoutes)
+  app.use("/api/admin", adminRoutes)
 
   app.use(notFound)
   app.use(errorHandler)
