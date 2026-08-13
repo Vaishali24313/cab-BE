@@ -4,9 +4,20 @@ import mongoose from "mongoose"
 import { env } from "../config/env"
 import { TourPackage } from "../models/TourPackage"
 import { User } from "../models/User"
+import { Vendor } from "../models/Vendor"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@cabtourist.com"
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "Admin@123"
+
+const VENDOR_SEEDS = [
+  { name: "Skyline Travels", city: "Mumbai", fleet: 48, drivers: 62, rating: 4.8, revenue: 1240000, status: "active", joined: "2023-02-11" },
+  { name: "Rajasthan Wheels", city: "Jaipur", fleet: 36, drivers: 44, rating: 4.7, revenue: 980000, status: "active", joined: "2023-05-19" },
+  { name: "Coastal Cabs", city: "Goa", fleet: 22, drivers: 28, rating: 4.6, revenue: 610000, status: "active", joined: "2023-08-02" },
+  { name: "Hill Rider Fleet", city: "Manali", fleet: 18, drivers: 21, rating: 4.5, revenue: 470000, status: "pending", joined: "2026-07-10" },
+  { name: "Southern Star Mobility", city: "Bengaluru", fleet: 54, drivers: 71, rating: 4.9, revenue: 1560000, status: "active", joined: "2022-11-23" },
+  { name: "Backwater Rides", city: "Kochi", fleet: 15, drivers: 19, rating: 4.4, revenue: 320000, status: "suspended", joined: "2024-01-30" },
+  { name: "Capital Cabs", city: "Delhi", fleet: 61, drivers: 88, rating: 4.7, revenue: 1810000, status: "active", joined: "2022-09-14" },
+]
 
 const PACKAGE_SEEDS = [
   {
@@ -123,6 +134,14 @@ async function seed() {
       console.log(`Seeded ${PACKAGE_SEEDS.length} tour packages`)
     } else {
       console.log(`Tour packages already seeded: ${packageCount}`)
+    }
+
+    const vendorCount = await Vendor.countDocuments()
+    if (vendorCount === 0) {
+      await Vendor.insertMany(VENDOR_SEEDS)
+      console.log(`Seeded ${VENDOR_SEEDS.length} vendors`)
+    } else {
+      console.log(`Vendors already seeded: ${vendorCount}`)
     }
 
     const adminCount = await User.countDocuments({ role: "admin" })
