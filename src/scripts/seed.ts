@@ -6,6 +6,7 @@ import { Booking } from "../models/Booking"
 import { TourPackage } from "../models/TourPackage"
 import { User } from "../models/User"
 import { Vendor } from "../models/Vendor"
+import { Vehicle } from "../models/Vehicle"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@cabtourist.com"
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "Admin@123"
@@ -120,6 +121,69 @@ const PACKAGE_SEEDS = [
   },
 ]
 
+const VEHICLE_SEEDS = [
+  {
+    name: "Hatchback",
+    description: "Compact & economical for city hops",
+    seats: 4,
+    bags: 2,
+    perKm: 11,
+    baseFare: 250,
+    eta: "4 min",
+    ac: true,
+    image: "/images/car-hatchback.jpg",
+    active: true,
+  },
+  {
+    name: "Sedan",
+    description: "Comfortable rides for small families",
+    seats: 4,
+    bags: 3,
+    perKm: 14,
+    baseFare: 350,
+    eta: "5 min",
+    ac: true,
+    image: "/images/car-sedan.jpg",
+    active: true,
+  },
+  {
+    name: "Ertiga",
+    description: "Spacious MPV ideal for groups",
+    seats: 6,
+    bags: 4,
+    perKm: 16,
+    baseFare: 450,
+    eta: "6 min",
+    ac: true,
+    image: "/images/car-ertiga.jpg",
+    active: true,
+  },
+  {
+    name: "SUV",
+    description: "Spacious & sturdy for hill routes",
+    seats: 6,
+    bags: 4,
+    perKm: 18,
+    baseFare: 500,
+    eta: "7 min",
+    ac: true,
+    image: "/images/car-suv.jpg",
+    active: true,
+  },
+  {
+    name: "Innova Crysta",
+    description: "Premium MPV for family & outstation",
+    seats: 7,
+    bags: 5,
+    perKm: 22,
+    baseFare: 700,
+    eta: "8 min",
+    ac: true,
+    image: "/images/car-innova.jpg",
+    active: true,
+  },
+]
+
 async function seed() {
   try {
     await mongoose.connect(env.MONGODB_URI, {
@@ -164,6 +228,14 @@ async function seed() {
       console.log(`Seeded ${BOOKING_SEEDS.length} bookings`)
     } else {
       console.log(`Bookings already seeded: ${bookingCount}`)
+    }
+
+    const vehicleCount = await Vehicle.countDocuments()
+    if (vehicleCount === 0) {
+      await Vehicle.insertMany(VEHICLE_SEEDS)
+      console.log(`Seeded ${VEHICLE_SEEDS.length} vehicles`)
+    } else {
+      console.log(`Vehicles already seeded: ${vehicleCount}`)
     }
 
     const adminCount = await User.countDocuments({ role: "admin" })

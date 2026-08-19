@@ -1,5 +1,6 @@
 import cors from "cors"
 import express from "express"
+import path from "path"
 
 import { env } from "./config/env"
 import { errorHandler, notFound } from "./middlewares/error.middleware"
@@ -8,6 +9,8 @@ import adminRoutes from "./routes/admin.routes"
 import bookingRoutes from "./routes/booking.routes"
 import tourPackageRoutes from "./routes/tourPackage.routes"
 import vendorRoutes from "./routes/vendor.routes"
+import vehicleRoutes from "./routes/vehicle.routes"
+import uploadRoutes from "./routes/upload.routes"
 
 export function createApp() {
   const app = express()
@@ -15,6 +18,7 @@ export function createApp() {
   app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }))
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")))
 
   app.get("/", (_req, res) => {
     res.json({
@@ -37,6 +41,8 @@ export function createApp() {
   app.use("/api/bookings", bookingRoutes)
   app.use("/api/packages", tourPackageRoutes)
   app.use("/api/vendors", vendorRoutes)
+  app.use("/api/vehicles", vehicleRoutes)
+  app.use("/api/admin/upload", uploadRoutes)
 
   app.use(notFound)
   app.use(errorHandler)

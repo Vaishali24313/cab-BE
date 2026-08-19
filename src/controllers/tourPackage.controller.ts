@@ -1,5 +1,6 @@
 import type { ITourPackage } from "../models/TourPackage"
 import { TourPackage } from "../models/TourPackage"
+import { RecycleBin } from "../models/RecycleBin"
 import { ApiError } from "../utils/ApiError"
 import { asyncHandler } from "../utils/asyncHandler"
 
@@ -15,6 +16,7 @@ type LeanPackage = {
   fromPrice: number
   highlights: string[]
   tag?: string
+  deletedAt?: Date
 }
 
 function publicPackage(pkg: ITourPackage | LeanPackage) {
@@ -34,7 +36,7 @@ function publicPackage(pkg: ITourPackage | LeanPackage) {
 }
 
 export const listPackages = asyncHandler(async (_req, res) => {
-  const packages = (await TourPackage.find().sort({ createdAt: -1 }).lean()) as LeanPackage[]
+  const packages = (await TourPackage.find({ deletedAt: { $exists: false } }).sort({ createdAt: -1 }).lean()) as LeanPackage[]
   res.json({ success: true, data: { packages: packages.map(publicPackage) } })
 })
 
@@ -61,5 +63,13 @@ export const updatePackage = asyncHandler(async (req, res) => {
 export const deletePackage = asyncHandler(async (req, res) => {
   const pkg = await TourPackage.findByIdAndDelete(req.params.id)
   if (!pkg) throw new ApiError(404, "Tour package not found")
+
+  const { _id, ...rest } = pkg.toObject()
+  await RecycleBin.create({
+    sourceCollection: "packages",
+    itemId: String(_id),
+    data: { ...rest, _id: String(_id) },
+  })
+
   res.json({ success: true, data: { id: String(pkg._id) } })
 })

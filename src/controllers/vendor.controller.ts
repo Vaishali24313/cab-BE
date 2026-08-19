@@ -1,5 +1,6 @@
 import type { IVendor, VendorStatus } from "../models/Vendor"
 import { Vendor } from "../models/Vendor"
+import { RecycleBin } from "../models/RecycleBin"
 import { ApiError } from "../utils/ApiError"
 import { asyncHandler } from "../utils/asyncHandler"
 
@@ -57,5 +58,13 @@ export const updateVendor = asyncHandler(async (req, res) => {
 export const deleteVendor = asyncHandler(async (req, res) => {
   const vendor = await Vendor.findByIdAndDelete(req.params.id)
   if (!vendor) throw new ApiError(404, "Vendor not found")
+
+  const { _id, ...rest } = vendor.toObject()
+  await RecycleBin.create({
+    sourceCollection: "vendors",
+    itemId: String(_id),
+    data: { ...rest, _id: String(_id) },
+  })
+
   res.json({ success: true, data: { id: String(vendor._id) } })
 })
