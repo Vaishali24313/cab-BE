@@ -6,6 +6,7 @@ import * as tourPackage from "../controllers/tourPackage.controller"
 import * as vendor from "../controllers/vendor.controller"
 import * as vehicle from "../controllers/vehicle.controller"
 import * as recycleBin from "../controllers/recycleBin.controller"
+import * as contactMessage from "../controllers/contactMessage.controller"
 import { authenticate } from "../middlewares/auth.middleware"
 import { requireAdmin } from "../middlewares/admin.middleware"
 import { validate } from "../middlewares/validate.middleware"
@@ -72,5 +73,10 @@ router.get("/recycle-bin", recycleBin.listDeleted)
 router.post("/recycle-bin/:id/restore", recycleBin.restoreItem)
 router.delete("/recycle-bin/:id", recycleBin.permanentDelete)
 router.delete("/recycle-bin", recycleBin.emptyBin)
+
+router.get("/contact-messages", contactMessage.listMessages)
+router.get("/contact-messages/:id", contactMessage.getMessage)
+router.put("/contact-messages/:id/read", contactMessage.markRead)
+router.delete("/contact-messages/:id", contactMessage.deleteMessage)
 
 export default router

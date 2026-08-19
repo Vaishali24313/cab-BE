@@ -11,6 +11,7 @@ import tourPackageRoutes from "./routes/tourPackage.routes"
 import vendorRoutes from "./routes/vendor.routes"
 import vehicleRoutes from "./routes/vehicle.routes"
 import uploadRoutes from "./routes/upload.routes"
+import contactMessageRoutes from "./routes/contactMessage.routes"
 
 export function createApp() {
   const app = express()
@@ -43,6 +44,7 @@ export function createApp() {
   app.use("/api/vendors", vendorRoutes)
   app.use("/api/vehicles", vehicleRoutes)
   app.use("/api/admin/upload", uploadRoutes)
+  app.use("/api/contact", contactMessageRoutes)
 
   app.use(notFound)
   app.use(errorHandler)
